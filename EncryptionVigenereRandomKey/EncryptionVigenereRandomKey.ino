@@ -24,7 +24,7 @@ char l1;
 char l2;
 char l3;
 char l4;
-
+char SendString[12];
 
 void setup() {
   // put your setup code here, to run once:
@@ -39,7 +39,7 @@ randomKey[1] = l2;
 randomKey[2] = l3;
 randomKey[3] = l4;
   MasterKeyEnc = randomKey;
-  String v = Vigenere_encrypt("2on",PrivateKey); 
+  String v = Vigenere_encrypt("2off",PrivateKey); 
   Serial.print("Random Key: ");
   Serial.println(MasterKeyEnc);
   Serial.print("Encryped Message: ");  
@@ -47,6 +47,9 @@ randomKey[3] = l4;
   Serial.print("Decrypted Message: ");
   Serial.println(Vigenere_decrypt(v,PrivateKey));
   //Serial.println(Vigenere_getcipher_key(PrivateKey));
+  sprintf(SendString, "%03s%03s", MasterKeyEnc.c_str(), v.c_str());
+  Serial.print("Send this: ");
+  Serial.println(SendString);
 }
 
 void loop() {

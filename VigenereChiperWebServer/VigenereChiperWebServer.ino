@@ -16,6 +16,11 @@ EthernetServer server(80);                             //server port
 String readString;
 String encryptedString;
 
+char MasterKeyEnc[5];  //MasterKey is randomized key from the client
+String PrivateKey = "crF&"; //will be the private key and can be any alphanumeric combination but the server and client must use the same PrivateKey.
+char v[5];
+byte flag = 0;
+
 void setup() {
  // Open serial communications and wait for port to open:
   Serial.begin(9600);
@@ -88,8 +93,7 @@ void loop() {
            client.println("</HTML>");
      
            delay(1);
-           //stopping client
-           client.stop();
+          
            
 //We want just the Chiper nothing else from the readString
 String temp1 = readString.substring(readString.indexOf("?")+1);
@@ -98,73 +102,109 @@ encryptedString = temp1;
 Serial.print("EncryptedString: ");
 Serial.println(encryptedString);
 //Now we need to get the PublicKey from the encryptedString
-
+sscanf(encryptedString.c_str(), "%04s%04s", &MasterKeyEnc, &v);
+Serial.print("Master/Public Key: ");
+Serial.println(MasterKeyEnc);
+String decrypt = Vigenere_decrypt(v,PrivateKey);
+Serial.print("Decrypted Message: ");
+Serial.println(decrypt);
            
            //controls the Arduino if you press the buttons
-           if (readString.indexOf("?button1on") >0){
+           if (decrypt == "2on"){
                digitalWrite(2, HIGH);
+               client.println("<br \>LED 2 ON!<br \>");
+               flag = 1;
            }
-           if (readString.indexOf("?button1off") >0){
+           if (decrypt == "2off"){
                digitalWrite(2, LOW);
+               client.println("<br \>LED 2 OFF!<br \>");
+               flag = 1;
            }
            
-           if (readString.indexOf("?button2on") >0){
+           if (decrypt == "3on"){
                digitalWrite(3, HIGH);
+               client.println("<br \>LED 3 ON!<br \>");
+               flag = 1;
            }
-           if (readString.indexOf("?button2off") >0){
+           if (decrypt == "3off"){
                digitalWrite(3, LOW);
+               client.println("<br \>LED 3 OFF!<br \>");
+               flag = 1;
            }
-           
-           if (readString.indexOf("?button3on") >0){
-               digitalWrite(4, HIGH);
-           }
-           if (readString.indexOf("?button3off") >0){
-               digitalWrite(4, LOW);
-           }
-           
-           
-           if (readString.indexOf("?button4on") >0){
-               digitalWrite(5, HIGH);
-           }
-           if (readString.indexOf("?button4off") >0){
-               digitalWrite(5, LOW);
-           }
-           
-           if (readString.indexOf("?button5on") >0){
-               digitalWrite(6, HIGH);
-           }
-           if (readString.indexOf("?button5off") >0){
-               digitalWrite(6, LOW);
-           }
-           
-           if (readString.indexOf("?button6on") >0){
-               digitalWrite(7, HIGH);
-           }
-           if (readString.indexOf("?button6off") >0){
-               digitalWrite(7, LOW);
-           }
-           
-           /*
-           if (readString.indexOf("?7on") >0){
-               digitalWrite(8, HIGH);
-           }
-           if (readString.indexOf("?7off") >0){
-               digitalWrite(8, LOW);
-           }
-           
-           if (readString.indexOf("?8on") >0){
-               digitalWrite(9, HIGH);
-           }
-           if (readString.indexOf("?8off") >0){
-               digitalWrite(9, LOW);
-           }
-           */
-           
+
+          if (flag == 0) {
+            client.println("<br \><H1>Unauthorized!</H1><br \>");
+          }
                       //clearing string for next read
             readString="";  
-           
+            flag = 0;
+            //stopping client
+           client.stop();
          }
        }
     }
 }
 }
+
+String Vigenere_decrypt(String text, String seed) {
+  seed.trim();
+  text.trim();
+  String cipher_key = Vigenere_getcipher_key(seed);
+  String dec;
+  for(int i = 0; i < text.length(); i++)  {
+    int X = (text[i]-32);
+    int K = ((cipher_key[i%(cipher_key.length())])-32);
+    int temp = ((X-K)+95)%95;
+    dec += (char) (temp + 32);
+  }
+  return dec;
+}
+
+//*---Print to see the table
+String Vigenere_table(String seed) {
+  seed.trim();
+  String cipher_key = Vigenere_getcipher_key(seed);
+  for(int i = 0; i < 95; i++) {
+    Serial.print((char) (i+32));
+  }
+  Serial.print("\n");
+  for(int i = 0; i < cipher_key.length(); i++) {    
+    for(int j = 0; j < 95; j++) {
+      int temp = cipher_key[i] - 32;
+      Serial.print((char)(((temp+j)%95)+32));
+    }
+    Serial.print("\n");
+  }
+}
+
+//*---Generate Vegenere Cipher key 95 char from 4char
+String Vigenere_getcipher_key(String seed) {
+  seed.trim();
+  int _vige[seed.length()];
+  int _seed[seed.length()];
+  String cipher;
+  String Vigenere_key_Table = MasterKeyEnc;    
+  while (Vigenere_key_Table.length()<95) {
+    for(int i = 0; i<seed.length() ;i++) {
+      _vige[i] = (int) (Vigenere_key_Table[i]);
+      _seed[i] = (int) (seed[i]);
+      _vige[i] = _vige[i] + _seed[i];
+      if (_vige[i] > 126) { 
+        _vige[i] = _vige[i]-95;
+        if (_vige[i] > 126) {
+          _vige[i] = _vige[i]-95; 
+        }
+      }
+      cipher += (char) (_vige[i]);
+      seed.replace((char)(seed[i]), (char)(_vige[i]));
+    } 
+    Vigenere_key_Table += cipher;
+    cipher = "";
+  }
+  if(Vigenere_key_Table.length() > 95) {
+    Vigenere_key_Table.remove (Vigenere_key_Table.length()-(Vigenere_key_Table.length() - 95),Vigenere_key_Table.length());
+  }
+  return Vigenere_key_Table;
+}
+
+

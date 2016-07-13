@@ -1,0 +1,13 @@
+
+Random Key: 6a4x
+Encryped Message: HQz_
+Decrypted Message: 2off
+Send this: 6a4xHQz_
+
+
+
+Random Key: d9qj
+Encryped Message: v)`
+Decrypted Message: 2on
+Send this: d9qjv)`
+
