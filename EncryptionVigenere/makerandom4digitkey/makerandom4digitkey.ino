@@ -1,4 +1,11 @@
 
+/*Code Snipit by LeRoy Miller (2016) generate a random 4 char alphanumeric pass key
+*Use how you wish, as this is just a snipit of a larger program
+*you may or may not find useful for other things.
+*July 13, 2016
+ */
+
+
 char randomKey[5];
 char l1;
 char l2;
@@ -8,6 +15,7 @@ char l4;
 void setup() {
   // put your setup code here, to run once:
 Serial.begin(9600);
+randomSeed(analogRead(0));
 l1 = ranletter();
 l2 = ranletter();
 l3 = ranletter();
@@ -27,6 +35,9 @@ Serial.print("Letter 4: ");
 Serial.println(l4);
 Serial.print("Random Key: ");
 Serial.println(randomKey);
+String PassKey = randomKey;
+Serial.print("String Key: ");
+Serial.println(PassKey);
 }
 
 
