@@ -17,8 +17,8 @@
  *  LeRoy F. Miller - Automation Technology Club
  */
 
-String MasterKeyEnc = "1rF&";
-String PassKey; //can be any alphanumeric combination
+String MasterKeyEnc;  //MasterKey is randomized and becomes public
+String PrivateKey = "crF&"; //will be the private key and can be any alphanumeric combination
 char randomKey[5];
 char l1;
 char l2;
@@ -38,15 +38,15 @@ randomKey[0] = l1;
 randomKey[1] = l2;
 randomKey[2] = l3;
 randomKey[3] = l4;
-  PassKey = randomKey;
-  String v = Vigenere_encrypt("This is what we want to encrypt",PassKey); 
+  MasterKeyEnc = randomKey;
+  String v = Vigenere_encrypt("2on",PrivateKey); 
   Serial.print("Random Key: ");
-  Serial.println(PassKey);
+  Serial.println(MasterKeyEnc);
   Serial.print("Encryped Message: ");  
   Serial.println(v);
   Serial.print("Decrypted Message: ");
-  Serial.println(Vigenere_decrypt(v,PassKey));
-  //Serial.println(Vigenere_getcipher_key(PassKey));
+  Serial.println(Vigenere_decrypt(v,PrivateKey));
+  //Serial.println(Vigenere_getcipher_key(PrivateKey));
 }
 
 void loop() {
