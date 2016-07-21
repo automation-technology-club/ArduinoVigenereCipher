@@ -156,7 +156,7 @@ Serial.print("Decrypted Message: ");
 Serial.println(decrypt);
            
            //controls the Arduino if you press the buttons
-           if (decrypt == "2on"){
+           if (decrypt == "2 on"){
                digitalWrite(2, HIGH);
                client.println("<br \>LED 2 ON!<br \>");
                flag = 1;
@@ -167,7 +167,7 @@ Serial.println(decrypt);
                flag = 1;
            }
            
-           if (decrypt == "3on"){
+           if (decrypt == "3 on"){
                digitalWrite(A0, HIGH);
                client.println("<br \>LED 3 ON!<br \>");
                flag = 1;

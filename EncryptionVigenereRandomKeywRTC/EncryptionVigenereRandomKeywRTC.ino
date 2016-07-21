@@ -68,7 +68,7 @@ y += mn;
 y += da;
 y += yr;
  
-  String v = Vigenere_encrypt("2off",PrivateKey); 
+  String v = Vigenere_encrypt("2 on",PrivateKey); 
   Serial.print("Random Key: ");
   Serial.println(MasterKeyEnc);
   Serial.print("Encryped Message: ");  
