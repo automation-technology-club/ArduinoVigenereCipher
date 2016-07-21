@@ -1,0 +1,36 @@
+
+Random Key: 6a4x
+Encryped Message: HQz_
+Decrypted Message: 2off
+Send this: 6a4xHQz_
+
+
+
+Random Key: d9qj
+Encryped Message: v)`
+Decrypted Message: 2on
+Send this: d9qjv)`
+
+
+RTC has set the system time
+Random Key: 2p16
+Encryped Message: D`w|
+Decrypted Message: 2off
+Encryption Time: 14417202016
+Combination Lock: 55 2043
+Send this: 2p16D`w|552043
+RTC has set the system time
+Random Key: v2xp
+Encryped Message: )"_W
+Decrypted Message: 2off
+Encryption Time: 14437202016
+Combination Lock: 57 2043
+Send this: v2xp)"_W572043
+RTC has set the system time
+Random Key: {trq
+Encryped Message: .dYX
+Decrypted Message: 2off
+Encryption Time: 1667202016
+Combination Lock: 22 2043
+Send this: {trq.dYX222043
+

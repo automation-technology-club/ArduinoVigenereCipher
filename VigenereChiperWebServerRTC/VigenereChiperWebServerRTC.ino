@@ -7,6 +7,9 @@
 
 #include <SPI.h>
 #include <Ethernet.h>
+#include <DS3232RTC.h>    //http://github.com/JChristensen/DS3232RTC
+#include <Time.h>         //http://www.arduino.cc/playground/Code/Time  
+#include <Wire.h>         //http://arduino.cc/en/Reference/Wire (included with Arduino IDE)
  
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };   //physical mac address
 byte ip[] = { 172, 16, 0, 178 };                      // ip in lan (that's what you need to use in your browser. ("192.168.1.178")
@@ -20,10 +23,23 @@ char MasterKeyEnc[5];  //MasterKey is randomized key from the client
 String PrivateKey = "crF&"; //will be the private key and can be any alphanumeric combination but the server and client must use the same PrivateKey.
 char v[5];
 byte flag = 0;
+int hr; // hours
+int mi; //minutes
+int da; //day
+int yr; //year
+int mn; //month
+int t; //combination of hr and mi (time)
+int y; //combination of mn da and yr 
+
 
 void setup() {
  // Open serial communications and wait for port to open:
   Serial.begin(9600);
+  setSyncProvider(RTC.get);   // the function to get the time from the RTC
+    if(timeStatus() != timeSet) 
+        Serial.println("Unable to sync with the RTC");
+    else
+        Serial.println("RTC has set the system time");
    while (!Serial) {
     ; // wait for serial port to connect. Needed for Leonardo only
   }
@@ -98,14 +114,43 @@ void loop() {
            
 //We want just the Chiper nothing else from the readString
 String temp1 = readString.substring(readString.indexOf("?")+1);
+Serial.print("Temp1 pass1: ");
+Serial.println(temp1);
 temp1.remove(temp1.indexOf(" "));
 encryptedString = temp1;
+Serial.print("Temp1: ");
+Serial.println(temp1);
 Serial.print("EncryptedString: ");
 Serial.println(encryptedString);
 //Now we need to get the PublicKey from the encryptedString
-sscanf(encryptedString.c_str(), "%04s%04s", &MasterKeyEnc, &v);
+sscanf(encryptedString.c_str(), "%04s%04s%02i%04i", &MasterKeyEnc, &v, &t, &y);
 Serial.print("Master/Public Key: ");
 Serial.println(MasterKeyEnc);
+Serial.print("Encrypted Message: ");
+Serial.println(v);
+Serial.print("Master Lock Code: ");
+Serial.print(t);
+Serial.print(" ");
+Serial.println(y);
+hr = hour();
+mi = minute();
+da = day();
+yr = year();
+mn = month();
+int t1; 
+t1 += hr;
+t1 += mi;
+//Serial.print("Debug Mode: t1 after adding ");
+//Serial.println(t1);
+//Serial.println(t);
+int y1; 
+y1 += mn;
+y1 += da;
+y1 += yr;
+//Serial.print("Debug Mode: y1 after adding ");
+//Serial.println(y1);
+//Serial.println(y);
+if (t1+y1 == t+y) {
 String decrypt = Vigenere_decrypt(v,PrivateKey);
 Serial.print("Decrypted Message: ");
 Serial.println(decrypt);
@@ -132,13 +177,15 @@ Serial.println(decrypt);
                client.println("<br \>LED 3 OFF!<br \>");
                flag = 1;
            }
-
+} 
           if (flag == 0) {
             client.println("<br \><H1>Unauthorized!</H1><br \>");
           }
                       //clearing string for next read
             readString="";  
             flag = 0;
+            y1 =0;
+            t1 =0;
             //stopping client
            client.stop();
          }
